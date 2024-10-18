@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management System - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            min-height: 100vh;
+            transition: width 0.3s;
+            overflow: hidden; /* Prevent overflow when collapsed */
+        }
+        .sidebar.collapsed {
+            width: 80px;
+        }
+        .sidebar .nav-link {
+            color: #cfd8dc;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #495057;
+            color: white;
+        }
+        .main-content {
+            width: calc(100% - 250px);
+            transition: all 0.3s;
+        }
+        .main-content.collapsed {
+            width: 100%;
+        }
+        .navbar {
+            background-color: #fff;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .navbar .profile {
+            display: flex;
+            align-items: center;
+        }
+        .navbar .profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .navbar .profile .dropdown-menu {
+            right: 0;
+            left: auto;
+        }
+        .search-bar {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; /* Center the search bar */
+            margin: 0 20px; /* Adjust margin to center it nicely */
+        }
+        .search-bar input {
+            width: 250px; /* Adjust input width as needed */
+        }
+        .search-bar button {
+            padding: 8px 10px; /* Adjust padding for the button */
+        }
+        .charts {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        .chart-container {
+            width: 48%;
+            height: 300px;
+        }
+        .content-area {
+            opacity: 1; /* Start with full opacity */
+            transition: opacity 0.3s;
+        }
+        .hidden {
+            display: none;
+        }
+        .sidebar img {
+            width: 100%; /* Adjust width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+z
+<div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar flex-shrink-0 p-3" id="sidebar">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <img src="management.png" alt="Logo" class="mb-2" class="profile"> <!-- Image Above Title -->
+            <button class="btn btn-light btn-sm" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+        </div>
+        <h4 class="text-white">Admin Dashboard</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#main-content" data-content="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#contentArea" data-content="students"><i class="fas fa-user-graduate"></i> Students</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-content="teachers"><i class="fas fa-chalkboard-teacher"></i> Teachers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-content="classes"><i class="fas fa-school"></i> Classes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-content="reports"><i class="fas fa-file-alt"></i> Reports</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-content="settings"><i class="fas fa-cog"></i> Settings</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content flex-grow-1 p-3" id="main-content">
+        <!-- Top Navbar -->
+        <nav class="navbar">
+            <span class="navbar-brand">Dashboard Overview</span>
+            <div class="search-bar">
+                <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
+                <button class="btn btn-outline-secondary btn-sm" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="profile">
+                <img src="logo.jpg" alt="Admin Profile">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dynamic Content Area -->
+        <div class="content-area" id="contentArea">
+            <!-- Dashboard Cards -->
+            <div id="dashboardContent" class="content-section">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Students</h5>
+                                <p class="card-text">1500</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Teachers</h5>
+                                <p class="card-text">75</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Classes</h5>
+                                <p class="card-text">30</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <h3 class="mb-4">Data Visualization</h3>
+                <div class="charts">
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Students Section -->
+                <h3 class="mb-4">Recent Students</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>Enrollment Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Doe</td>
+                            <td>10th Grade</td>
+                            <td>2023-01-15</td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>11th Grade</td>
+                            <td>2023-02-20</td>
+                        </tr>
+                        <tr>
+                            <td>Emily Johnson</td>
+                            <td>12th Grade</td>
+                            <td>2023-03-10</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="studentsContent" class="content-section hidden">
+     <h3>Students Management</h3>
+<div class="container mt-5">
+    <h2>Student Profile</h2>
+    <form>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter student's name" required>
+        </div>
+        <div class="mb-3">
+            <label for="studentId" class="form-label">Student ID:</label>
+            <input type="text" class="form-control" id="studentId" placeholder="Enter student ID" required>
+        </div>
+        <div class="mb-3">
+            <label for="contact" class="form-label">Contact:</label>
+            <input type="tel" class="form-control" id="contact" placeholder="Enter contact number" required>
+        </div>
+        <div class="mb-3">
+            <label for="demographics" class="form-label">Demographics Information:</label>
+            <textarea class="form-control" id="demographics" rows="4" placeholder="Enter demographics information" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+ <div class="container mt-5">
+        <h2>Enrollment Form</h2>
+        <form>
+            <div class="mb-3">
+                <label for="studentName" class="form-label">Student Name</label>
+                <input type="text" class="form-control" id="studentName" required>
+            </div>
+            <div class="mb-3">
+                <label for="studentEmail" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="studentEmail" required>
+            </div>
+            <div class="mb-3">
+                <label for="studentId" class="form-label">Student ID</label>
+                <input type="text" class="form-control" id="studentId" required>
+            </div>
+            
+            <h4>Current Status</h4>
+            <div class="mb-3">
+                <label class="form-label">Select Status:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="status" id="active" value="active" required>
+                    <label class="form-check-label" for="active">Active</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="status" id="inactive" value="inactive">
+                    <label class="form-check-label" for="inactive">Inactive</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="status" id="graduated" value="graduated">
+                    <label class="form-check-label" for="graduated">Graduated</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+  
+
+<title>Attendance Records Form</title>
+
+<div class="container mt-5">
+    <h2>Attendance Records</h2>
+    <form>
+        <div class="mb-3">
+            <label for="attendanceRate" class="form-label">Attendance Rate (%):</label>
+            <input type="number" class="form-control" id="attendanceRate" placeholder="Enter attendance rate" min="0" max="100" required>
+        </div>
+        <div class="mb-3">
+            <label for="absences" class="form-label">Number of Absences:</label>
+            <input type="number" class="form-control" id="absences" placeholder="Enter number of absences" min="0" required>
+        </div>
+        <div class="mb-3">
+            <label for="tardiness" class="form-label">Number of Tardiness:</label>
+            <input type="number" class="form-control" id="tardiness" placeholder="Enter number of tardiness" min="0" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  
+  <title>Academic Performance Form</title>
+<div class="container mt-5">
+    <h2>Academic Performance</h2>
+    <form>
+        <div class="mb-3">
+            <label for="grade" class="form-label">Grade:</label>
+            <input type="text" class="form-control" id="grade" placeholder="Enter grade (e.g., A, B, C)" required>
+        </div>
+        <div class="mb-3">
+            <label for="gpa" class="form-label">GPA:</label>
+            <input type="number" class="form-control" id="gpa" placeholder="Enter GPA" step="0.01" min="0" max="4.0" required>
+        </div>
+        <div class="mb-3">
+            <label for="progress" class="form-label">Progress:</label>
+            <textarea class="form-control" id="progress" rows="4" placeholder="Enter progress details" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+<title>Behavioral Record Form</title>
+<div class="container mt-5">
+    <h2>Behavioral Record</h2>
+    <form>
+        <div class="mb-3">
+            <label for="studentName" class="form-label">Student Name:</label>
+            <input type="text" class="form-control" id="studentName" placeholder="Enter student's name" required>
+        </div>
+        <div class="mb-3">
+            <label for="date" class="form-label">Date of Incident:</label>
+            <input type="date" class="form-control" id="date" required>
+        </div>
+        <div class="mb-3">
+            <label for="disciplinaryActions" class="form-label">Notes on Disciplinary Actions:</label>
+            <textarea class="form-control" id="disciplinaryActions" rows="4" placeholder="Enter notes on disciplinary actions" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+   <div class="container mt-5">
+        <h2>Course Enrollment Form</h2>
+        <form>
+            <div class="mb-3">
+                <label for="studentName" class="form-label">Student Name</label>
+                <input type="text" class="form-control" id="studentName" required>
+            </div>
+            <div class="mb-3">
+                <label for="studentEmail" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="studentEmail" required>
+            </div>
+            <div class="mb-3">
+                <label for="studentId" class="form-label">Student ID</label>
+                <input type="text" class="form-control" id="studentId" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Courses Enrolled</label>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item">
+                        <input type="checkbox" id="course1" value="Mathematics">
+                        <label for="course1">Mathematics</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input type="checkbox" id="course2" value="Physics">
+                        <label for="course2">Physics</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input type="checkbox" id="course3" value="Chemistry">
+                        <label for="course3">Chemistry</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input type="checkbox" id="course4" value="Biology">
+                        <label for="course4">Biology</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input type="checkbox" id="course5" value="Computer Science">
+                        <label for="course5">Computer Science</label>
+                    </li>
+                </ul>
+            </div>
+            <button type="submit" class="btn btn-primary">Enroll</button>
+        </form>
+    
+ <!-- Add more content related to students here -->
+            </div>
+
+            <div id="teachersContent" class="content-section hidden">
+      <h3>Teachers Management</h3>
+           <p>Teachers Profile</p>
+       <div class="container mt-5">
+   <h2>Teacher Profile Form</h2>
+      <form>
+            <div class="mb-3">
+                <label for="teacherName" class="form-label">Name</label>
+                <input type="text" class="form-control" id="teacherName" required>
+            </div>
+            <div class="mb-3">
+                <label for="teacherId" class="form-label">ID</label>
+                <input type="text" class="form-control" id="teacherId" required>
+            </div>
+            <div class="mb-3">
+                <label for="contactNumber" class="form-label">Contact Number</label>
+                <input type="tel" class="form-control" id="contactNumber" required>
+            </div>
+            <div class="mb-3">
+                <label for="qualifications" class="form-label">Qualifications</label>
+                <textarea class="form-control" id="qualifications" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+      <!-- Add more content related to teachers here -->
+            </div>
+
+            <div id="classesContent" class="content-section hidden">
+                <h3>Classes Management</h3>
+                <p>Manage class data here...</p>
+                <!-- Add more content related to classes here -->
+          <div class="container mt-5">
+        <h2>Classes Management Data</h2>
+        <form>
+            <!-- Class Information Section -->
+            <fieldset class="border p-3 mb-4">
+                <legend class="w-auto">Class Information</legend>
+                <div class="mb-3">
+                    <label for="className" class="form-label">Class Name</label>
+                    <input type="text" class="form-control" id="className" required>
+                </div>
+                <div class="mb-3">
+                    <label for="classCode" class="form-label">Class Code</label>
+                    <input type="text" class="form-control" id="classCode" required>
+                </div>
+            </fieldset>
+
+            <!-- Enrollment Number Section -->
+            <fieldset class="border p-3 mb-4">
+                <legend class="w-auto">Enrollment Number</legend>
+                <div class="mb-3">
+                    <label for="currentStatus" class="form-label">Current Status of Students Enrolled</label>
+                    <input type="text" class="form-control" id="currentStatus" required>
+                </div>
+                <div class="mb-3">
+                    <label for="maxCapacity" class="form-label">Maximum Capacity</label>
+                    <input type="number" class="form-control" id="maxCapacity" required>
+                </div>
+            </fieldset>
+
+            <!-- Classroom Resources Section -->
+            <fieldset class="border p-3 mb-4">
+                <legend class="w-auto">Classroom Resources</legend>
+                <div class="mb-3">
+                    <label for="resources" class="form-label">List of Materials and Resources Used in the Class</label>
+                    <textarea class="form-control" id="resources" rows="3" required></textarea>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+  </div>
+
+            <div id="reportsContent" class="content-section hidden">
+                <h3>Reports</h3>
+                <p>View reports here...</p>
+                <!-- Add more content related to reports here -->
+ <div class="container mt-5">
+        <h2>Report Review</h2>
+        <form>
+            <!-- Report Type Section -->
+            <fieldset class="border p-3 mb-4">
+                <legend class="w-auto">Report Type</legend>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="reportType" id="academic" value="academic" required>
+                    <label class="form-check-label" for="academic">Academic</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="reportType" id="attendance" value="attendance">
+                    <label class="form-check-label" for="attendance">Attendance</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="reportType" id="behavior" value="behavior">
+                    <label class="form-check-label" for="behavior">Behavior</label>
+                </div>
+            </fieldset>
+
+            <!-- Review Dates Section -->
+            <fieldset class="border p-3 mb-4">
+                <legend class="w-auto">Review Dates</legend>
+                <div class="mb-3">
+                    <label for="createdDate" class="form-label">Date Report Created</label>
+                    <input type="date" class="form-control" id="createdDate" required>
+                </div>
+                <div class="mb-3">
+                    <label for="reviewedDate" class="form-label">Date Report Reviewed</label>
+                    <input type="date" class="form-control" id="reviewedDate" required>
+                </div>
+            </fieldset>
+
+            <!-- Comments Section -->
+            <fieldset class="border p-3 mb-4">
+                <legend class="w-auto">Comments</legend>
+                <div class="mb-3">
+                    <label for="feedback" class="form-label">Feedback from Reviewers</label>
+                    <textarea class="form-control" id="feedback" rows="3" required></textarea>
+                </div>
+            </fieldset>
+
+            <!-- Action Items Section -->
+            <fieldset class="border p-3 mb-4">
+                <legend class="w-auto">Action Items</legend>
+                <div class="mb-3">
+                    <label for="actionItems" class="form-label">Recommended Actions</label>
+                    <textarea class="form-control" id="actionItems" rows="3" required></textarea>
+                </div>
+            </fieldset>
+
+            <!-- Next Steps Section -->
+            <fieldset class="border p-3 mb-4">
+                <legend class="w-auto">Next Steps</legend>
+                <div class="mb-3">
+                    <label for="nextSteps" class="form-label">Plans for Future Evaluation</label>
+                    <textarea class="form-control" id="nextSteps" rows="3" required></textarea>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+ </div>
+
+            <div id="settingsContent" class="content-section hidden">
+                <h3>Settings</h3>
+                <p>Update your settings here...</p>
+        
+                <!-- Add more content related to settings here -->
+    <div class="container mt-5">
+        <h2>Settings Form</h2>
+      <form>
+
+            <!-- Access Controls -->
+            <h4>1. Access Controls</h4>
+            <div class="mb-3">
+                <label class="form-label">Roles</label>
+                <select class="form-select" required>
+                    <option value="" disabled selected>Select a role</option>
+                    <option value="admin">Admin</option>
+                    <option value="editor">Editor</option>
+                    <option value="viewer">Viewer</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Permissions</label>
+                <div>
+                    <input type="checkbox" id="viewData" value="view">
+                    <label for="viewData">Who can view data</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="editData" value="edit">
+                    <label for="editData">Who can edit data</label>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <h4>2. Data Management</h4>
+            <div class="mb-3">
+                <label class="form-label">Data Import</label>
+                <input type="file" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Data Export</label>
+                <button type="button" class="btn btn-secondary">Export Data</button>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Backup Settings</label>
+                <input type="text" class="form-control" placeholder="Backup frequency" required>
+            </div>
+
+            <!-- Primary Settings -->
+            <h4>3. Primary Settings</h4>
+            <div class="mb-3">
+                <label class="form-label">Guidelines for Data</label>
+                <textarea class="form-control" rows="2" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Sharing and Confidentiality</label>
+                <textarea class="form-control" rows="2" required></textarea>
+            </div>
+
+            <!-- Customization Options -->
+            <h4>4. Customization Options</h4>
+            <div class="mb-3">
+                <label class="form-label">Features to Personalize Dashboard</label>
+                <input type="text" class="form-control" placeholder="Enter features" required>
+            </div>
+
+            <!-- Support Links -->
+            <h4>5. Support Links</h4>
+            <div class="mb-3">
+                <label class="form-label">Access to Help Resources</label>
+                <input type="url" class="form-control" placeholder="Enter help resource URL" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contact Information for Assistance</label>
+                <input type="text" class="form-control" placeholder="Enter contact information" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+        </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<script>
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    const contentArea = document.getElementById('contentArea');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Toggle sidebar functionality
+    toggleSidebar.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('collapsed');
+
+        // Hide content when sidebar is collapsed
+        if (sidebar.classList.contains('collapsed')) {
+            contentArea.style.opacity = 0; // Hide content
+            setTimeout(() => {
+                contentArea.classList.add('hidden'); // Prevent interaction
+            }, 300); // Match this delay with CSS transition duration
+        } else {
+            contentArea.classList.remove('hidden'); // Show content again
+            setTimeout(() => {
+                contentArea.style.opacity = 1; // Fade in content
+            }, 0); // Start fading in immediately after showing
+        }
+    });
+
+    // Navigation link click event
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const contentId = link.getAttribute('data-content');
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(contentId + 'Content').classList.remove('hidden');
+            
+            // If clicking on the dashboard link, ensure it shows the dashboard content
+            if (contentId === 'dashboard') {
+                document.getElementById('dashboardContent').classList.remove('hidden');
+            }
+        });
+    });
+
+    // Chart.js initialization
+    const ctx1 = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(ctx1, {
+        type: 'pie',
+        data: {
+            labels: ['Students', 'Teachers', 'Classes'],
+            datasets: [{
+                data: [1500, 75, 30],
+                backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
+            }]
+        }
+    });
+
+    const ctx2 = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Students', 'Teachers', 'Classes'],
+            datasets: [{
+                label: 'Count',
+                data: [1500, 75, 30],
+                backgroundColor: '#4BC0C0'
+            }]
+        }
+    });
+</script>
+
+</body>
+</html>
